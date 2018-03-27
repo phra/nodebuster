@@ -1,0 +1,14 @@
+{
+  "name": "nodebuster",
+  "version": "0.0.1",
+  "description": "dirbuster clone for nodejs",
+  "main": "dist/index.js",
+  "repository": "https://github.com/phra/nodebuster",
+  "author": "phra",
+  "license": "GPL-3.0",
+  "private": false,
+  "devDependencies": {
+    "tslint": "^5.9.1",
+    "typescript": "^2.8.1"
+  }
+}
