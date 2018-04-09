@@ -8,7 +8,14 @@
   "license": "GPL-3.0",
   "private": false,
   "devDependencies": {
+    "@types/node": "^9.6.0",
+    "ts-node": "^5.0.1",
     "tslint": "^5.9.1",
     "typescript": "^2.8.1"
+  },
+  "dependencies": {
+    "caporal": "^0.10.0",
+    "chalk": "^2.3.2",
+    "cli-progress": "^1.8.0"
   }
 }
