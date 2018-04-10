@@ -3,28 +3,37 @@ import _progress = require('cli-progress')
 import events = require('events')
 import fs = require('fs')
 import http = require('http')
+import _url = require('url')
 
-import { IResult } from '../models'
+import { IOptions, IResult } from '../models'
 
 const results = new Array(512)
 const workersEmitters: events.EventEmitter[] = []
 
+const DEFAULT_OPTIONS: IOptions = {
+  wordlist: '/usr/share/wordlists/dirbuster/directory-list-2.3-small.txt',
+  extensions: [],
+  workers: 10,
+}
+
 export function dir(
   logger: Logger,
-  host: string,
-  port: number,
-  wordlist = '/usr/share/wordlists/dirbuster/directory-list-2.3-small.txt',
-  extensions = [],
-  workers = 10,
-  entryPath = '/',
+  url: string,
+  options: IOptions,
 ) {
+  const {
+    wordlist,
+    extensions,
+    workers,
+  } = { ...DEFAULT_OPTIONS, ...options }
+
   const WORDLIST = fs.readFileSync(wordlist, 'utf8')
-    .split('\n')
-    .filter((line) => line && !line.startsWith('#') && !line.startsWith(' '))
-    .reduce((acc, current) => {
-      acc.push(current, ...extensions.map((ext) => current + '.' + ext))
-      return acc
-    }, [] as string[])
+  .split('\n')
+  .filter((line) => line && !line.startsWith('#') && !line.startsWith(' '))
+  .reduce((acc, current) => {
+    acc.push(current, ...extensions.map((ext) => current + '.' + ext))
+    return acc
+  }, [] as string[])
 
   const progress = new _progress.Bar({
     format: '[{bar}] {percentage}% | ETA: {eta_formatted} | Elapsed: {elapsed}s | Current: {value}/{total} | Speed: {speed} reqs/s',
@@ -33,6 +42,7 @@ export function dir(
     fps: 3,
   }, _progress.Presets.shades_classic)
 
+  const httpOptions = _url.parse(url)
   const startTime = new Date().getTime()
   let totalReqs = 0
   let speed = 0
@@ -68,28 +78,26 @@ export function dir(
       }
 
       results[msg.statusCode] = results[msg.statusCode] || []
-      results[msg.statusCode].push(msg.path)
+      results[msg.statusCode].push(path)
     }
 
     totalReqs++
-    workersEmitters[workerIndex].emit('messageFromMaster', entryPath + encodeURIComponent(WORDLIST.shift() || ''))
+    workersEmitters[workerIndex].emit('messageFromMaster', httpOptions.pathname + encodeURIComponent(WORDLIST.shift() || ''))
     progress.increment(1, {
       speed: Math.round(speed),
       elapsed: Math.round(elapsed),
     })
   }
 
-  function _worker(agent: http.Agent, emitter: events.EventEmitter, path: string) {
-    if (path) {
+  function _worker(agent: http.Agent, emitter: events.EventEmitter, pathname: string) {
+    if (pathname) {
       http.get({
-        host,
-        port,
-        agent,
-        path,
+        ...httpOptions as http.RequestOptions,
+        path: pathname,
       }, (res) => {
         emitter.emit('messageFromWorker', {
           statusCode: res.statusCode,
-          path,
+          path: pathname,
           length: res.headers['content-length'],
           location: res.headers.location,
         })
