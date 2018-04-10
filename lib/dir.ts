@@ -84,7 +84,7 @@ export function dir(
         emitter.emit('messageFromWorker', { statusCode: res.statusCode, path, length: res.headers.length })
         res.resume()
       })
-    } else { progress.stop() }
+    }
   }
 
   for (let index = 0; index < Math.min(workers, WORDLIST.length); index++) {
