@@ -42,23 +42,23 @@ export function dir(
 
   function _handleResult(workerIndex: number, msg: IResult) {
     if (msg.statusCode !== 404) {
-      const { statusCode, path, length } = msg
+      const { statusCode, path, length, location } = msg
       process.stderr.write('\x1b[2K\r')
       switch (true) {
         case statusCode >= 100 && statusCode <= 199:
-          logger.info(`[${chalk.gray('+')}] ${statusCode} - /${path} - ${length}`)
+          logger.info(`[${chalk.gray('+')}] ${chalk.gray(statusCode.toString())} - ${path}`)
           break
         case statusCode >= 200 && statusCode <= 299:
-          logger.info(`[${chalk.green('+')}] ${statusCode} - /${path} - ${length}`)
+          logger.info(`[${chalk.green('+')}] ${chalk.green(statusCode.toString())} - ${path} = ${length}`)
           break
         case statusCode >= 300 && statusCode <= 399:
-          logger.info(`[${chalk.yellow('+')}] ${statusCode} - /${path} - ${length}`)
+          logger.info(`[${chalk.yellow('+')}] ${chalk.yellow(statusCode.toString())} - ${path} -> ${location}`)
           break
         case statusCode >= 400 && statusCode <= 499:
-          logger.info(`[${chalk.magenta('+')}] ${statusCode} - /${path} - ${length}`)
+          logger.info(`[${chalk.magenta('+')}] ${chalk.magenta(statusCode.toString())} - ${path} -> ${length || 0}`)
           break
         case statusCode >= 500 && statusCode <= 599:
-          logger.info(`[${chalk.red('+')}] ${statusCode} - /${path} - ${length}`)
+          logger.info(`[${chalk.red('+')}] ${chalk.red(statusCode.toString())} - ${path} -> ${length || 0}`)
           break
       }
 
@@ -67,7 +67,7 @@ export function dir(
     }
 
     totalReqs++
-    workersEmitters[workerIndex].emit('messageFromMaster', encodeURIComponent(WORDLIST.shift() || ''))
+    workersEmitters[workerIndex].emit('messageFromMaster', '/' + encodeURIComponent(WORDLIST.shift() || ''))
     progress.increment(1, {
       speed: Math.round(speed),
       elapsed: Math.round(elapsed),
@@ -79,13 +79,14 @@ export function dir(
       http.get({
         host,
         port,
-        path,
         agent,
+        path,
       }, (res) => {
         emitter.emit('messageFromWorker', {
           statusCode: res.statusCode,
           path,
-          length: res.headers['content-length'] || 0,
+          length: res.headers['content-length'],
+          location: res.headers.location,
         })
 
         res.resume()
