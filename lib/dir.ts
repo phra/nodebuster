@@ -25,7 +25,7 @@ export function dir(
     format: '[{bar}] {percentage}% | ETA: {eta_formatted} | Elapsed: {elapsed}s | Current: {value}/{total} | Speed: {speed} reqs/s',
     etaBuffer: 2500,
     stopOnComplete: true,
-    fps: 10,
+    fps: 3,
   }, _progress.Presets.shades_classic)
 
   const startTime = new Date().getTime()
