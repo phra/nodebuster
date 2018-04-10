@@ -53,16 +53,16 @@ export function dir(
           logger.info(`[${chalk.gray('+')}] ${chalk.gray(statusCode.toString())} - ${path}`)
           break
         case statusCode >= 200 && statusCode <= 299:
-          logger.info(`[${chalk.green('+')}] ${chalk.green(statusCode.toString())} - ${path} = ${length}`)
+          logger.info(`[${chalk.green('+')}] ${chalk.green(statusCode.toString())} - ${path} = ${length || 0}`)
           break
         case statusCode >= 300 && statusCode <= 399:
           logger.info(`[${chalk.yellow('+')}] ${chalk.yellow(statusCode.toString())} - ${path} -> ${location}`)
           break
         case statusCode >= 400 && statusCode <= 499:
-          logger.info(`[${chalk.magenta('+')}] ${chalk.magenta(statusCode.toString())} - ${path} -> ${length || 0}`)
+          logger.info(`[${chalk.magenta('+')}] ${chalk.magenta(statusCode.toString())} - ${path} = ${length || 0}`)
           break
         case statusCode >= 500 && statusCode <= 599:
-          logger.info(`[${chalk.red('+')}] ${chalk.red(statusCode.toString())} - ${path} -> ${length || 0}`)
+          logger.info(`[${chalk.red('+')}] ${chalk.red(statusCode.toString())} - ${path} = ${length || 0}`)
           break
       }
 
