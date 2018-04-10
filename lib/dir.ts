@@ -16,6 +16,7 @@ export function dir(
   wordlist = '/usr/share/wordlists/dirbuster/directory-list-2.3-small.txt',
   extensions = [],
   workers = 10,
+  entryPath = '/',
 ) {
   const WORDLIST = fs.readFileSync(wordlist, 'utf8')
     .split('\n')
@@ -71,7 +72,7 @@ export function dir(
     }
 
     totalReqs++
-    workersEmitters[workerIndex].emit('messageFromMaster', '/' + encodeURIComponent(WORDLIST.shift() || ''))
+    workersEmitters[workerIndex].emit('messageFromMaster', entryPath + encodeURIComponent(WORDLIST.shift() || ''))
     progress.increment(1, {
       speed: Math.round(speed),
       elapsed: Math.round(elapsed),
