@@ -1,4 +1,4 @@
-import chalk = require('chalk')
+import chalk from 'chalk'
 import _progress = require('cli-progress')
 import events = require('events')
 import fs = require('fs')
@@ -22,42 +22,43 @@ export function dir(
     .filter((line) => line && !line.startsWith('#') && !line.startsWith(' '))
 
   const progress = new _progress.Bar({
-    format: '[{bar}] {percentage}% | ETA: {eta}s | Elapsed: {elapsed}s | Current: {value}/{total} | Speed: {speed} reqs/s',
-    etaBuffer: 500,
+    format: '[{bar}] {percentage}% | ETA: {eta_formatted} | Elapsed: {elapsed}s | Current: {value}/{total} | Speed: {speed} reqs/s',
+    etaBuffer: 2500,
     stopOnComplete: true,
-    fps: 1,
+    fps: 10,
   }, _progress.Presets.shades_classic)
-
-  progress.start(WORDLIST.length, 0)
 
   const startTime = new Date().getTime()
   let totalReqs = 0
   let speed = 0
   let elapsed = 0
 
+  progress.start(WORDLIST.length, 0)
+
   setInterval(() => {
-    elapsed = (new Date().getTime() - startTime) / 1000
-    speed = Math.round(totalReqs / elapsed)
+    elapsed = ((new Date().getTime() - startTime) / 1000)
+    speed = totalReqs / elapsed
   }, 1000).unref()
 
   function _handleResult(workerIndex: number, msg: IResult) {
     if (msg.statusCode !== 404) {
+      const { statusCode, path, length } = msg
       process.stderr.write('\x1b[2K\r')
       switch (true) {
-        case msg.statusCode.toString().startsWith('1'):
-          logger.info(`[${chalk.default.gray('+')}] ${msg.statusCode} - /${msg.path} ${msg['content-length'] ? '-' : ''} ${msg['content-length'] || ''}`)
+        case statusCode >= 100 && statusCode <= 199:
+          logger.info(`[${chalk.gray('+')}] ${statusCode} - /${path} - ${length}`)
           break
-        case msg.statusCode.toString().startsWith('2'):
-          logger.info(`[${chalk.default.green('+')}] ${msg.statusCode} - /${msg.path} ${msg['content-length'] ? '-' : ''} ${msg['content-length'] || ''}`)
+        case statusCode >= 200 && statusCode <= 299:
+          logger.info(`[${chalk.green('+')}] ${statusCode} - /${path} - ${length}`)
           break
-        case msg.statusCode.toString().startsWith('3'):
-          logger.info(`[${chalk.default.yellow('+')}] ${msg.statusCode} - /${msg.path} ${msg['content-length'] ? '-' : ''} ${msg['content-length'] || ''}`)
+        case statusCode >= 300 && statusCode <= 399:
+          logger.info(`[${chalk.yellow('+')}] ${statusCode} - /${path} - ${length}`)
           break
-        case msg.statusCode.toString().startsWith('4'):
-          logger.info(`[${chalk.default.magenta('+')}] ${msg.statusCode} - /${msg.path} ${msg['content-length'] ? '-' : ''} ${msg['content-length'] || ''}`)
+        case statusCode >= 400 && statusCode <= 499:
+          logger.info(`[${chalk.magenta('+')}] ${statusCode} - /${path} - ${length}`)
           break
-        case msg.statusCode.toString().startsWith('5'):
-          logger.info(`[${chalk.default.red('+')}] ${msg.statusCode} - /${msg.path} ${msg['content-length'] ? '-' : ''} ${msg['content-length']}` || '')
+        case statusCode >= 500 && statusCode <= 599:
+          logger.info(`[${chalk.red('+')}] ${statusCode} - /${path} - ${length}`)
           break
       }
 
@@ -68,8 +69,8 @@ export function dir(
     totalReqs++
     workersEmitters[workerIndex].emit('messageFromMaster', encodeURIComponent(WORDLIST.shift() || ''))
     progress.increment(1, {
-      speed,
-      elapsed,
+      speed: Math.round(speed),
+      elapsed: Math.round(elapsed),
     })
   }
 
@@ -81,7 +82,12 @@ export function dir(
         path,
         agent,
       }, (res) => {
-        emitter.emit('messageFromWorker', { statusCode: res.statusCode, path, length: res.headers.length })
+        emitter.emit('messageFromWorker', {
+          statusCode: res.statusCode,
+          path,
+          length: res.headers['content-length'] || 0,
+        })
+
         res.resume()
       })
     }
