@@ -20,6 +20,10 @@ export function dir(
   const WORDLIST = fs.readFileSync(wordlist, 'utf8')
     .split('\n')
     .filter((line) => line && !line.startsWith('#') && !line.startsWith(' '))
+    .reduce((acc, current) => {
+      acc.push(current, ...extensions.map((ext) => current + '.' + ext))
+      return acc
+    }, [] as string[])
 
   const progress = new _progress.Bar({
     format: '[{bar}] {percentage}% | ETA: {eta_formatted} | Elapsed: {elapsed}s | Current: {value}/{total} | Speed: {speed} reqs/s',
