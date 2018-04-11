@@ -16,6 +16,7 @@ const DEFAULT_OPTIONS: IOptions = {
   extensions: [],
   workers: 10,
   ignoreSSL: false,
+  cookies: [],
 }
 
 export function dir(
@@ -98,7 +99,7 @@ export function dir(
       switch (httpOptions.protocol) {
         case 'http:':
         default:
-          http.request({
+          const reqHTTP = http.request({
             ...httpOptions as http.RequestOptions,
             agent,
             path: pathname,
@@ -111,11 +112,14 @@ export function dir(
             })
 
             res.resume()
-          }).end()
+          })
+
+          reqHTTP.setHeader('cookie', options.cookies.join('; '))
+          reqHTTP.end()
           break
 
         case 'https:':
-          https.request({
+          const reqHTTPS = https.request({
             ...httpOptions as https.RequestOptions,
             agent,
             path: pathname,
@@ -128,7 +132,10 @@ export function dir(
             })
 
             res.resume()
-          }).end()
+          })
+
+          reqHTTPS.setHeader('cookie', options.cookies.join('; '))
+          reqHTTPS.end()
           break
       }
 

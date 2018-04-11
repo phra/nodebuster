@@ -3,4 +3,5 @@ export interface IOptions {
   extensions: string[]
   workers: number
   ignoreSSL: boolean
+  cookies: string[]
 }
