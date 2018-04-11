@@ -27,11 +27,14 @@ export function dir(
     workers,
   } = { ...DEFAULT_OPTIONS, ...options }
 
-  const WORDS = fs.readFileSync(wordlist, 'utf8')
+  const WORDLIST = fs.readFileSync(wordlist, 'utf8')
     .split('\n')
     .filter((line) => line && !line.startsWith('#') && !line.startsWith(' '))
-
-  const WORDLIST = [...WORDS.map((word) => word), ...extensions.reduce((acc, ext) => WORDS.map((word) => `${word}.${ext}`), []).map((word) => word)]
+    .reduce((acc, current, index) => {
+      acc.push(current)
+      acc.push(...extensions.map((ext) => current + '.' + ext))
+      return acc
+    }, [] as string[])
 
   const progress = new _progress.Bar({
     format: '[{bar}] {percentage}% | ETA: {eta_formatted} | Elapsed: {elapsed}s | Current: {value}/{total} | Speed: {speed} reqs/s',
@@ -79,8 +82,8 @@ export function dir(
       results[msg.statusCode].push(path)
     }
 
+    workersEmitters[workerIndex].emit('messageFromMaster', httpOptions.pathname + encodeURIComponent(WORDLIST[totalReqs] || ''))
     totalReqs++
-    workersEmitters[workerIndex].emit('messageFromMaster', httpOptions.pathname + encodeURIComponent(WORDLIST.shift() || ''))
     progress.increment(1, {
       speed: Math.round(speed),
       elapsed: Math.round(elapsed),
