@@ -8,6 +8,7 @@
   "license": "GPL-3.0",
   "private": false,
   "devDependencies": {
+    "0x": "^4.0.8",
     "@types/node": "^9.6.0",
     "ts-node": "^5.0.1",
     "tslint": "^5.9.1",
