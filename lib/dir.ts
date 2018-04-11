@@ -3,6 +3,7 @@ import _progress = require('cli-progress')
 import events = require('events')
 import fs = require('fs')
 import http = require('http')
+import https = require('https')
 import _url = require('url')
 
 import { IOptions, IResult } from '../models'
@@ -14,6 +15,7 @@ const DEFAULT_OPTIONS: IOptions = {
   wordlist: '/usr/share/wordlists/dirbuster/directory-list-2.3-small.txt',
   extensions: [],
   workers: 10,
+  ignoreSSL: false,
 }
 
 export function dir(
@@ -43,6 +45,7 @@ export function dir(
     fps: 3,
   }, _progress.Presets.shades_classic)
 
+  const WORKERS = Math.min(workers, WORDLIST.length)
   const httpOptions = _url.parse(url)
   const startTime = new Date().getTime()
   let totalReqs = 0
@@ -82,7 +85,7 @@ export function dir(
       results[msg.statusCode].push(path)
     }
 
-    workersEmitters[workerIndex].emit('messageFromMaster', httpOptions.pathname + encodeURIComponent(WORDLIST[totalReqs] || ''))
+    workersEmitters[workerIndex].emit('messageFromMaster', httpOptions.pathname + encodeURIComponent(WORDLIST[totalReqs + WORKERS] || ''))
     totalReqs++
     progress.increment(1, {
       speed: Math.round(speed),
@@ -92,32 +95,64 @@ export function dir(
 
   function _worker(agent: http.Agent, emitter: events.EventEmitter, pathname: string) {
     if (pathname) {
-      http.get({
-        ...httpOptions as http.RequestOptions,
-        path: pathname,
-      }, (res) => {
-        emitter.emit('messageFromWorker', {
-          statusCode: res.statusCode,
-          path: pathname,
-          length: res.headers['content-length'],
-          location: res.headers.location,
-        })
+      switch (httpOptions.protocol) {
+        case 'http:':
+        default:
+          http.request({
+            ...httpOptions as http.RequestOptions,
+            agent,
+            path: pathname,
+          }, (res) => {
+            emitter.emit('messageFromWorker', {
+              statusCode: res.statusCode,
+              path: pathname,
+              length: res.headers['content-length'],
+              location: res.headers.location,
+            })
 
-        res.resume()
-      })
+            res.resume()
+          })
+          break
+
+        case 'https:':
+          https.request({
+            ...httpOptions as https.RequestOptions,
+            agent,
+            path: pathname,
+          }, (res) => {
+            emitter.emit('messageFromWorker', {
+              statusCode: res.statusCode,
+              path: pathname,
+              length: res.headers['content-length'],
+              location: res.headers.location,
+            })
+
+            res.resume()
+          })
+          break
+      }
+
     }
   }
 
-  for (let index = 0; index < Math.min(workers, WORDLIST.length); index++) {
+  for (let index = 0; index < WORKERS; index++) {
     const emitter = new events.EventEmitter()
-    const keepAliveAgent = new http.Agent({
+    const keepAliveAgentHTTP = new http.Agent({
       keepAlive: true,
       keepAliveMsecs: 1000,
     })
 
+    const keepAliveAgentHTTPS = new https.Agent({
+      keepAlive: true,
+      keepAliveMsecs: 1000,
+      rejectUnauthorized: options.ignoreSSL,
+    })
+
+    const keepAliveAgent = httpOptions.protocol === 'http:' ? keepAliveAgentHTTP : keepAliveAgentHTTPS
+
     emitter.on('messageFromWorker', _handleResult.bind(emitter, index))
     emitter.on('messageFromMaster', _worker.bind(emitter, keepAliveAgent, emitter))
-    emitter.emit('messageFromMaster', WORDLIST.shift())
+    emitter.emit('messageFromMaster', WORDLIST[index])
     workersEmitters.push(emitter)
   }
 }
