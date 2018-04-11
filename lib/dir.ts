@@ -111,7 +111,7 @@ export function dir(
             })
 
             res.resume()
-          })
+          }).end()
           break
 
         case 'https:':
@@ -128,7 +128,7 @@ export function dir(
             })
 
             res.resume()
-          })
+          }).end()
           break
       }
 
