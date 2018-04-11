@@ -11,6 +11,7 @@ caporal
   .argument('<url>', '<url> to attack', /^https?:\/\//)
   .option('--workers <workers>', 'Use n <workers>', caporal.INT, 10)
   .option('--wordlist <wordlist>', 'Wordlist to use', caporal.STRING, '/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt')
+  .option('--user-agent <ua>', 'User-agent to use', caporal.STRING, 'nodebuster')
   .option('--extensions <extensions>', 'Extensions to use', caporal.LIST, [])
   .option('--cookies', 'Set <cookies>', caporal.LIST, [])
   .action((args, options, logger) => {

@@ -17,6 +17,7 @@ const DEFAULT_OPTIONS: IOptions = {
   workers: 10,
   ignoreSSL: false,
   cookies: [],
+  ua: 'nodebuster',
 }
 
 export function dir(
@@ -114,7 +115,8 @@ export function dir(
             res.resume()
           })
 
-          reqHTTP.setHeader('cookie', options.cookies.join('; '))
+          reqHTTP.setHeader('Cookie', options.cookies.join('; '))
+          reqHTTP.setHeader('User-Agent', options.ua)
           reqHTTP.end()
           break
 
@@ -134,7 +136,8 @@ export function dir(
             res.resume()
           })
 
-          reqHTTPS.setHeader('cookie', options.cookies.join('; '))
+          reqHTTPS.setHeader('Cookie', options.cookies.join('; '))
+          reqHTTPS.setHeader('User-Agent', options.ua)
           reqHTTPS.end()
           break
       }
