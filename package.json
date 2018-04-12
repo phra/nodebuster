@@ -17,6 +17,7 @@
   "dependencies": {
     "caporal": "^0.10.0",
     "chalk": "^2.3.2",
+    "chalk-animation": "^1.6.0",
     "cli-progress": "^1.8.0"
   }
 }
