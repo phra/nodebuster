@@ -4,5 +4,5 @@ export interface IOptions {
   workers: number
   ignoreSSL: boolean
   cookies: string[]
-  ua: string
+  userAgent: string
 }
