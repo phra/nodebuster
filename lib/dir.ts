@@ -162,7 +162,7 @@ export function dir(
 
     emitter.on('messageFromWorker', _handleResult.bind(emitter, index))
     emitter.on('messageFromMaster', _worker.bind(emitter, keepAliveAgent, emitter))
-    emitter.emit('messageFromMaster', WORDLIST[index])
+    emitter.emit('messageFromMaster', httpOptions.pathname + encodeURIComponent(WORDLIST[index]))
     workersEmitters.push(emitter)
   }
 }
