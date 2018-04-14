@@ -1,6 +1,6 @@
 {
   "name": "nodebuster",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "dirbuster clone for nodejs",
   "main": "dist/nodebuster.js",
   "repository": "https://github.com/phra/nodebuster",
