@@ -26,7 +26,7 @@ caporal
   .option('--user-agent <user-agent>', 'User-agent to use', caporal.STRING, 'nodebuster')
   .option('--extensions <extensions>', 'Extensions to use', caporal.LIST, [])
   .option('--cookies', 'Set <cookies>', caporal.LIST, [])
-  .option('--ignore-ssl', 'Skip SSL/TLS certificate check', caporal.LIST, [])
+  .option('--ignore-ssl', 'Skip SSL/TLS certificate check', caporal.BOOLEAN, false)
   .action((args, options, logger) => {
     const _ = animator(BANNER)
     setTimeout(() => {
