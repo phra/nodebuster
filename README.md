@@ -25,6 +25,12 @@ npm i -g @phra/nodebuster # install it globally (onetime and updates)
 nodebuster -h
 ```
 
+- Example
+
+```bash
+npx @phra/nodebuster dir --extensions php,txt,old --cookies "asd=lol","lol=asd" --user-agent "nodebuster" http://localhost:8000/
+```
+
 ## CLI Usage
 
 
