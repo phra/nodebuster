@@ -18,6 +18,7 @@ const DEFAULT_OPTIONS: IOptions = {
   ignoreSSL: false,
   cookies: [],
   userAgent: 'nodebuster',
+  consecutiveFails: 15,
 }
 
 export function dir(
@@ -53,6 +54,8 @@ export function dir(
   let totalReqs = 0
   let speed = 0
   let elapsed = 0
+  let totalFails = 0
+  let consecutiveFails = 0
 
   progress.start(WORDLIST.length, 0)
 
@@ -65,20 +68,38 @@ export function dir(
     if (msg.statusCode !== 404) {
       const { statusCode, path, length, location } = msg
       process.stderr.write('\x1b[2K\r')
+      totalReqs++
       switch (true) {
+        case statusCode === -1:
+          consecutiveFails++
+          totalFails++
+          logger.error(`[${chalk.red('+')}] ${chalk.gray(msg.error || '')} - ${path}`)
+          if (totalReqs === 1) {
+            logger.error(`[${chalk.red('+')}] ${chalk.gray('target seems down')}`)
+            process.exit(-1)
+          } else if (consecutiveFails === options.consecutiveFails) {
+            logger.error(`[${chalk.red('+')}] ${chalk.gray('exiting after ' + consecutiveFails + ' fails')}`)
+            process.exit(-1)
+          }
+          break
         case statusCode >= 100 && statusCode <= 199:
+          consecutiveFails = 0
           logger.info(`[${chalk.gray('+')}] ${chalk.gray(statusCode.toString())} - ${path}`)
           break
         case statusCode >= 200 && statusCode <= 299:
+          consecutiveFails = 0
           logger.info(`[${chalk.green('+')}] ${chalk.green(statusCode.toString())} - ${path} = ${length || 0}`)
           break
         case statusCode >= 300 && statusCode <= 399:
+          consecutiveFails = 0
           logger.info(`[${chalk.yellow('+')}] ${chalk.yellow(statusCode.toString())} - ${path} -> ${location}`)
           break
         case statusCode >= 400 && statusCode <= 499:
+          consecutiveFails = 0
           logger.info(`[${chalk.magenta('+')}] ${chalk.magenta(statusCode.toString())} - ${path} = ${length || 0}`)
           break
         case statusCode >= 500 && statusCode <= 599:
+          consecutiveFails = 0
           logger.info(`[${chalk.red('+')}] ${chalk.red(statusCode.toString())} - ${path} = ${length || 0}`)
           break
       }
@@ -88,7 +109,6 @@ export function dir(
     }
 
     workersEmitters[workerIndex].emit('messageFromMaster', httpOptions.pathname + encodeURIComponent(WORDLIST[totalReqs + WORKERS] || ''))
-    totalReqs++
     progress.increment(1, {
       speed: Math.round(speed),
       elapsed: Math.round(elapsed),
@@ -115,9 +135,18 @@ export function dir(
             res.resume()
           })
 
+          reqHTTP.on('error', (err) => {
+            emitter.emit('messageFromWorker', {
+              statusCode: -1,
+              path: pathname,
+              error: err.message,
+            })
+          })
+
           reqHTTP.setHeader('Cookie', options.cookies.join('; '))
           reqHTTP.setHeader('User-Agent', options.userAgent)
           reqHTTP.end()
+
           break
 
         case 'https:':
@@ -136,12 +165,20 @@ export function dir(
             res.resume()
           })
 
+          reqHTTPS.on('error', (err) => {
+            emitter.emit('messageFromWorker', {
+              statusCode: -1,
+              path: pathname,
+              error: err.message,
+            })
+          })
+
           reqHTTPS.setHeader('Cookie', options.cookies.join('; '))
           reqHTTPS.setHeader('User-Agent', options.userAgent)
           reqHTTPS.end()
+
           break
       }
-
     }
   }
 

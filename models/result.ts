@@ -3,4 +3,5 @@ export interface IResult {
   path: string
   length: number
   location: string
+  error?: string
 }
