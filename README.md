@@ -4,6 +4,8 @@
 
 NodeBuster, or yet another DirBuster clone, is a Node.js application to bruteforce directories and files on HTTP(S) servers.
 
+[![asciicast](https://asciinema.org/a/rLNfhWqUA0SqFj51INX470U27.png)](https://asciinema.org/a/rLNfhWqUA0SqFj51INX470U27)
+
 ## Prerequisites
 
 - Node.js 8+
