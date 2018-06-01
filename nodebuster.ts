@@ -27,6 +27,7 @@ caporal
   .option('--extensions <extensions>', 'Extensions to use', caporal.LIST, [])
   .option('--cookies', 'Set <cookies>', caporal.LIST, [])
   .option('--ignore-ssl', 'Skip SSL/TLS certificate check', caporal.BOOLEAN, false)
+  .option('--consecutive-fails', 'Stop after <consecutive-fails>', caporal.INT, 15)
   .action((args, options, logger) => {
     const _ = animator(BANNER)
     setTimeout(() => {

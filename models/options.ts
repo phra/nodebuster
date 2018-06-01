@@ -5,4 +5,5 @@ export interface IOptions {
   ignoreSSL: boolean
   cookies: string[]
   userAgent: string
+  consecutiveFails: number
 }
