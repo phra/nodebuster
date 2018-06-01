@@ -109,8 +109,8 @@ export function dir(
       results[msg.statusCode].push(path)
     }
 
-    workersEmitters[workerIndex].emit('messageFromMaster', httpOptions.pathname + encodeURIComponent(WORDLIST[totalReqs + WORKERS] || ''))
     totalReqs++
+    workersEmitters[workerIndex].emit('messageFromMaster', httpOptions.pathname + encodeURIComponent(WORDLIST[totalReqs + WORKERS] || ''))
     progress.increment(1, {
       speed: Math.round(speed),
       elapsed: Math.round(elapsed),
