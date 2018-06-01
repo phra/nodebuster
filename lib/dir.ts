@@ -52,6 +52,7 @@ export function dir(
   const httpOptions = _url.parse(url)
   const startTime = new Date().getTime()
   let totalReqs = 0
+  let totalReqsCompleted = 0
   let speed = 0
   let elapsed = 0
   let totalFails = 0
@@ -68,13 +69,13 @@ export function dir(
     if (msg.statusCode !== 404) {
       const { statusCode, path, length, location } = msg
       process.stderr.write('\x1b[2K\r')
-      totalReqs++
+      totalReqsCompleted++
       switch (true) {
         case statusCode === -1:
           consecutiveFails++
           totalFails++
           logger.error(`[${chalk.red('+')}] ${chalk.gray(msg.error || '')} - ${path}`)
-          if (totalReqs === 1) {
+          if (totalReqsCompleted === 1) {
             logger.error(`[${chalk.red('+')}] ${chalk.gray('target seems down')}`)
             process.exit(-1)
           } else if (consecutiveFails === options.consecutiveFails) {
@@ -109,6 +110,7 @@ export function dir(
     }
 
     workersEmitters[workerIndex].emit('messageFromMaster', httpOptions.pathname + encodeURIComponent(WORDLIST[totalReqs + WORKERS] || ''))
+    totalReqs++
     progress.increment(1, {
       speed: Math.round(speed),
       elapsed: Math.round(elapsed),
@@ -196,7 +198,6 @@ export function dir(
     })
 
     const keepAliveAgent = httpOptions.protocol === 'http:' ? keepAliveAgentHTTP : keepAliveAgentHTTPS
-
     emitter.on('messageFromWorker', _handleResult.bind(emitter, index))
     emitter.on('messageFromMaster', _worker.bind(emitter, keepAliveAgent, emitter))
     emitter.emit('messageFromMaster', httpOptions.pathname + encodeURIComponent(WORDLIST[index]))
