@@ -12,9 +12,7 @@ const version = require('./package.json').version
 
 const BANNER = `[!] nodebuster v.${version}`
 
-const effects = ['rainbow', 'pulse', 'glitch', 'radar', 'neon', 'karaoke']
-
-const animator = animation[effects[(Math.random() * 100 % (effects.length - 1)).toFixed(0)]]
+const animator = animation.glitch
 
 caporal
   .version(version)
