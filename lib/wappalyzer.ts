@@ -14,11 +14,12 @@ const options = {
 }
 
 const EXTENSIONS = {
-  python: ['py'],
-  java: ['jsp', 'do', 'jar', 'java'],
-  php: ['php'],
-  dotnet: ['asp', 'aspx', 'do'],
-  nodejs: ['js'],
+  _DEFAULT: ['txt', 'html', 'js', 'md'],
+  python: ['py', 'pyc'],
+  java: ['jsp', 'do', 'jar', 'java', 'class'],
+  php: ['php', 'php5', 'phar'],
+  dotnet: ['asp', 'aspx', 'ashx', 'asax', 'axd', 'htm'],
+  nodejs: ['js', 'jsx', 'ts', 'tsx'],
   perl: ['pl'],
 }
 
@@ -35,7 +36,7 @@ export function printResults(results: IWappalyzerResult): void {
 }
 
 export function selectExtensions(results: IWappalyzerResult): string[] {
-  const extensions = ['txt']
+  const extensions = EXTENSIONS._DEFAULT
   results.applications.forEach((res) => {
     switch (res.name.toLowerCase()) {
       case 'python':
