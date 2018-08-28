@@ -6,4 +6,5 @@ export interface IOptions {
   cookies: string[]
   userAgent: string
   consecutiveFails: number
+  headers: string[]
 }
