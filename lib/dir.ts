@@ -15,7 +15,7 @@ const DEFAULT_OPTIONS: IOptions = {
   wordlist: '/usr/share/wordlists/dirbuster/directory-list-2.3-small.txt',
   extensions: [],
   workers: 10,
-  ignoreSSL: false,
+  ignoreSsl: false,
   cookies: [],
   userAgent: 'nodebuster',
   consecutiveFails: 15,
@@ -27,19 +27,14 @@ export function dir(
   url: string,
   options: IOptions,
 ) {
-  const {
-    wordlist,
-    extensions,
-    workers,
-  } = { ...DEFAULT_OPTIONS, ...options }
-
-  const WORDLIST = fs.readFileSync(wordlist, 'utf8')
+  options = { ...DEFAULT_OPTIONS, ...options }
+  const WORDLIST = fs.readFileSync(options.wordlist, 'utf8')
     .trim()
     .split('\n')
     .filter((line) => line && !line.startsWith('#') && !line.startsWith(' '))
     .reduce((acc, current, index) => {
       acc.push(current)
-      acc.push(...extensions.map((ext) => current + '.' + ext))
+      acc.push(...options.extensions.map((ext) => current + '.' + ext))
       return acc
     }, [''] as string[])
 
@@ -50,14 +45,13 @@ export function dir(
     fps: 3,
   }, _progress.Presets.shades_classic)
 
-  const WORKERS = Math.min(workers, WORDLIST.length)
+  const WORKERS = Math.min(options.workers, WORDLIST.length)
   const httpOptions = _url.parse(url)
   const startTime = new Date().getTime()
   let totalReqs = 0
   let totalReqsCompleted = 0
   let speed = 0
   let elapsed = 0
-  let totalFails = 0
   let consecutiveFails = 0
 
   progress.start(WORDLIST.length, 0)
@@ -75,7 +69,6 @@ export function dir(
       switch (true) {
         case statusCode === -1:
           consecutiveFails++
-          totalFails++
           logger.error(`[${chalk.red('+')}] ${chalk.gray(msg.error || '')} - ${path}`)
           if (totalReqsCompleted === 1) {
             logger.error(`[${chalk.red('+')}] ${chalk.gray('target seems down')}`)
@@ -211,7 +204,7 @@ export function dir(
     const keepAliveAgentHTTPS = new https.Agent({
       keepAlive: true,
       keepAliveMsecs: 1000,
-      rejectUnauthorized: options.ignoreSSL,
+      rejectUnauthorized: options.ignoreSsl,
     })
 
     const keepAliveAgent = httpOptions.protocol === 'http:' ? keepAliveAgentHTTP : keepAliveAgentHTTPS
