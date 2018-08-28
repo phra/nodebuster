@@ -52,6 +52,7 @@ OPTIONS
   -u, --user-agent <user-agent>      <user-agent> to use                 optional      default: "nodebuster"                                                  
   -e, --extensions <extensions>      <extensions> to use                 optional      default: []                                                            
   -c, --cookies <cookies>            Set <cookies>                       optional      default: []                                                            
+  -H, --header <header>              Set <headers>                       optional      default: []                                                            
   -K, --ignore-ssl                   Enable <ignore-ssl>                 optional      default: false                                                         
   -f, --consecutive-fails            Stop after <consecutive-fails>      optional      default: 15                                                            
 
