@@ -24,6 +24,7 @@ caporal
   .option('-u, --user-agent <user-agent>', '<user-agent> to use', caporal.STRING, 'nodebuster')
   .option('-e, --extensions <extensions>', '<extensions> to use', caporal.LIST, [])
   .option('-c, --cookies <cookies>', 'Set <cookies>', caporal.LIST, [])
+  .option('-H, --headers <header>', '<header> to use', caporal.REPEATABLE, [])
   .option('-K, --ignore-ssl', 'Enable <ignore-ssl>', caporal.BOOLEAN, false)
   .option('-f, --consecutive-fails', 'Stop after <consecutive-fails>', caporal.INT, 15)
   .action((args, options, logger) => {
