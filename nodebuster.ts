@@ -23,7 +23,7 @@ caporal
   .option('-W, --wordlist <wordlist>', '<wordlist> to use', caporal.STRING, '/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt')
   .option('-u, --user-agent <user-agent>', '<user-agent> to use', caporal.STRING, 'nodebuster')
   .option('-e, --extensions <extensions>', '<extensions> to use', caporal.LIST, [])
-  .option('-c, --cookies <cookies>', 'Set <cookies>', caporal.LIST, [])
+  .option('-c, --cookies <cookies>', 'Set <cookies>', caporal.REPEATABLE, [])
   .option('-H, --headers <header>', '<header> to use', caporal.REPEATABLE, [])
   .option('-K, --ignore-ssl', 'Enable <ignore-ssl>', caporal.BOOLEAN, false)
   .option('-f, --consecutive-fails', 'Stop after <consecutive-fails>', caporal.INT, 15)
