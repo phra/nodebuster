@@ -152,7 +152,7 @@ export function dir(
 
           reqHTTP.setHeader('Cookie', options.cookies.join('; '))
           reqHTTP.setHeader('User-Agent', options.userAgent)
-          options.headers.forEach(h => {
+          options.headers.forEach((h) => {
             const key = h.split(': ')[0].trim()
             const value = h.split(': ')[1].trim()
             reqHTTP.setHeader(key, value)
@@ -188,7 +188,7 @@ export function dir(
 
           reqHTTPS.setHeader('Cookie', options.cookies.join('; '))
           reqHTTPS.setHeader('User-Agent', options.userAgent)
-          options.headers.forEach(h => {
+          options.headers.forEach((h) => {
             const key = h.split(': ')[0].trim()
             const value = h.split(': ')[1].trim()
             reqHTTPS.setHeader(key, value)
