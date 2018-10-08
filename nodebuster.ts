@@ -24,7 +24,6 @@ caporal
   .option('-e, --extensions <extensions>', '<extensions> to use', caporal.LIST, [])
   .option('-C, --cookies <cookies>', 'Set <cookies>', caporal.REPEATABLE, [])
   .option('-H, --headers <headers>', '<headers> to use', caporal.REPEATABLE, [])
-  .option('-K, --ignore-ssl', 'Enable <ignore-ssl>', caporal.BOOLEAN, false)
   .option('-f, --consecutive-fails', 'Stop after <consecutive-fails>', caporal.INT, 15)
   .action((args, options, logger) => {
     const _ = animation.rainbow(BANNER)

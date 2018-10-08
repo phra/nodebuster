@@ -12,7 +12,7 @@ const results = new Array(512)
 const workersEmitters: events.EventEmitter[] = []
 
 const DEFAULT_OPTIONS: IOptions = {
-  wordlist: '/usr/share/wordlists/dirbuster/directory-list-2.3-small.txt',
+  wordlist: '/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt',
   extensions: [],
   workers: 10,
   ignoreSsl: false,
@@ -204,7 +204,7 @@ export function dir(
     const keepAliveAgentHTTPS = new https.Agent({
       keepAlive: true,
       keepAliveMsecs: 1000,
-      rejectUnauthorized: options.ignoreSsl,
+      rejectUnauthorized: true,
     })
 
     const keepAliveAgent = httpOptions.protocol === 'http:' ? keepAliveAgentHTTP : keepAliveAgentHTTPS
