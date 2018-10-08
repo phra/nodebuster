@@ -1,6 +1,6 @@
 {
   "name": "@phra/nodebuster",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "dirbuster clone for nodejs",
   "main": "dist/nodebuster.js",
   "repository": "https://github.com/phra/nodebuster",
@@ -9,18 +9,19 @@
   "private": false,
   "bin": "./dist/nodebuster.js",
   "devDependencies": {
-    "0x": "^4.0.8",
-    "@types/node": "^9.6.0",
+    "0x": "^4.5.1",
+    "@types/node": "^10.11.4",
     "rimraf": "^2.6.2",
-    "ts-node": "^5.0.1",
-    "tslint": "^5.9.1",
-    "typescript": "^2.8.1"
+    "ts-node": "^7.0.1",
+    "tslint": "^5.11.0",
+    "typescript": "^3.1.1"
   },
   "dependencies": {
     "caporal": "^0.10.0",
-    "chalk": "^2.3.2",
+    "chalk": "^2.4.1",
     "chalk-animation": "^1.6.0",
-    "cli-progress": "^1.8.0"
+    "cli-progress": "^2.1.0",
+    "wappalyzer": "^5.5.1"
   },
   "scripts": {
     "build": "rimraf dist && tsc -p . && cp package.json dist",

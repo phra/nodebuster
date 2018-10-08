@@ -4,15 +4,14 @@ import caporal = require('caporal')
 console.log = console.error.bind(console)
 import animation = require('chalk-animation')
 
-import { dir } from './lib'
+import { dir, printResults, selectExtensions, wappalyzerScan } from './lib'
 import { IOptions } from './models'
 
 // tslint:disable-next-line:no-var-requires
 const version = require('./package.json').version
 
 const BANNER = `[!] nodebuster v.${version}`
-
-const animator = animation.glitch
+const WAPPALAZYER_BANNER = `[!] Scanning with Wappalyzer...`
 
 caporal
   .version(version)
@@ -21,17 +20,28 @@ caporal
   .argument('<url>', '<url> to attack', /^https?:\/\//)
   .option('-w, --workers <workers>', 'Use n <workers>', caporal.INT, 10)
   .option('-W, --wordlist <wordlist>', '<wordlist> to use', caporal.STRING, '/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt')
-  .option('-u, --user-agent <user-agent>', '<user-agent> to use', caporal.STRING, 'nodebuster')
+  .option('-U, --user-agent <user-agent>', '<user-agent> to use', caporal.STRING, 'nodebuster')
   .option('-e, --extensions <extensions>', '<extensions> to use', caporal.LIST, [])
-  .option('-c, --cookies <cookies>', 'Set <cookies>', caporal.REPEATABLE, [])
-  .option('-H, --headers <header>', '<header> to use', caporal.REPEATABLE, [])
-  .option('-K, --ignore-ssl', 'Enable <ignore-ssl>', caporal.BOOLEAN, false)
+  .option('-C, --cookies <cookies>', 'Set <cookies>', caporal.REPEATABLE, [])
+  .option('-H, --headers <headers>', '<headers> to use', caporal.REPEATABLE, [])
   .option('-f, --consecutive-fails', 'Stop after <consecutive-fails>', caporal.INT, 15)
   .action((args, options, logger) => {
-    const _ = animator(BANNER)
+    const _ = animation.rainbow(BANNER)
     setTimeout(() => {
       _.stop()
-      dir(logger, args.url, options as IOptions)
+      if (!options.extensions.length) {
+        const __ = animation.rainbow(WAPPALAZYER_BANNER)
+        wappalyzerScan(args.url).then((results) => {
+          __.stop()
+          printResults(results)
+          options.extensions = selectExtensions(results)
+          process.stdout.write(`[?] Using extensions: ${options.extensions.join()}\n`)
+          dir(logger, args.url, options as IOptions)
+        }).catch((err) => console.error(err))
+      } else {
+        process.stdout.write(`[?] Using extensions: ${options.extensions.join()}\n`)
+        dir(logger, args.url, options as IOptions)
+      }
     }, 2000)
   })
 
