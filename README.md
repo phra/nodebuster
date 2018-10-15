@@ -4,7 +4,7 @@
 
 NodeBuster, or yet another DirBuster clone, is a Node.js application to bruteforce directories and files on HTTP(S) servers.
 
-[![asciicast](https://asciinema.org/a/VFKMpmV7URVPpjk9odcEaSsW4.png)](https://asciinema.org/a/VFKMpmV7URVPpjk9odcEaSsW4)
+[![asciicast](https://asciinema.org/a/VFKMpmV7URVPpjk9odcEaSsW4.png)](https://asciinema.org/a/VFKMpmV7URVPpjk9odcEaSsW4) [![Greenkeeper badge](https://badges.greenkeeper.io/phra/nodebuster.svg)](https://greenkeeper.io/)
 
 ## Prerequisites
 
