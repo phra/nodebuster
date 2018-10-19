@@ -21,6 +21,7 @@
     "chalk": "^2.4.1",
     "chalk-animation": "^1.6.0",
     "cli-progress": "^2.1.0",
+    "colorette": "^1.0.6",
     "wappalyzer": "^5.5.1"
   },
   "scripts": {
