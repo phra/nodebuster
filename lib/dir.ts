@@ -54,12 +54,29 @@ export function dir(
   let elapsed = 0
   let consecutiveFails = 0
 
-  progress.start(WORDLIST.length, 0)
+  function printError(error: string, path?: string) {
+    logger.error(`[${chalk.red('+')}] ${chalk.gray(error || '')}${path ? ' - ' + path : ''}`)
+  }
 
-  setInterval(() => {
-    elapsed = ((new Date().getTime() - startTime) / 1000)
-    speed = totalReqs / elapsed
-  }, 1000).unref()
+  function print100(statusCode: string, path: string) {
+    logger.info(`[${chalk.gray('+')}] ${chalk.gray(statusCode)} - ${path}`)
+  }
+
+  function print200(statusCode: string, path: string, length?: number) {
+    logger.info(`[${chalk.green('+')}] ${chalk.green(statusCode)} ${path}${length ? ' = ' + length : ''}`)
+  }
+
+  function print300(statusCode: string, path: string, location: string) {
+    logger.info(`[${chalk.yellow('+')}] ${chalk.yellow(statusCode)} ${path}${location ? ' => ' + location : ''}`)
+  }
+
+  function print400(statusCode: string, path: string, length?: number) {
+    logger.info(`[${chalk.magenta('+')}] ${chalk.magenta(statusCode)} ${path}${length ? ' = ' + length : ''}`)
+  }
+
+  function print500(statusCode: string, path: string, length?: number) {
+    logger.info(`[${chalk.red('+')}] ${chalk.red(statusCode)} - ${path}${length ? ' = ' + length : ''}`)
+  }
 
   function _handleResult(workerIndex: number, msg: IResult) {
     if (msg.statusCode !== 404) {
@@ -69,34 +86,34 @@ export function dir(
       switch (true) {
         case statusCode === -1:
           consecutiveFails++
-          logger.error(`[${chalk.red('+')}] ${chalk.gray(msg.error || '')} - ${path}`)
+          printError(msg.error!, path)
           if (totalReqsCompleted === 1) {
-            logger.error(`[${chalk.red('+')}] ${chalk.gray('target seems down')}`)
+            printError('target seems down')
             process.exit(-1)
           } else if (consecutiveFails === options.consecutiveFails) {
-            logger.error(`[${chalk.red('+')}] ${chalk.gray('exiting after ' + consecutiveFails + ' fails')}`)
+            printError('exiting after ' + consecutiveFails + ' fails')
             process.exit(-1)
           }
           break
         case statusCode >= 100 && statusCode <= 199:
           consecutiveFails = 0
-          logger.info(`[${chalk.gray('+')}] ${chalk.gray(statusCode.toString())} - ${path}`)
+          print100(path, statusCode.toString())
           break
         case statusCode >= 200 && statusCode <= 299:
           consecutiveFails = 0
-          logger.info(`[${chalk.green('+')}] ${chalk.green(statusCode.toString())} - ${path} = ${length || 0}`)
+          print200(statusCode.toString(), path, length)
           break
         case statusCode >= 300 && statusCode <= 399:
           consecutiveFails = 0
-          logger.info(`[${chalk.yellow('+')}] ${chalk.yellow(statusCode.toString())} - ${path} -> ${location}`)
+          print300(statusCode.toString(), path, location)
           break
         case statusCode >= 400 && statusCode <= 499:
           consecutiveFails = 0
-          logger.info(`[${chalk.magenta('+')}] ${chalk.magenta(statusCode.toString())} - ${path} = ${length || 0}`)
+          print400(statusCode.toString(), path, length)
           break
         case statusCode >= 500 && statusCode <= 599:
           consecutiveFails = 0
-          logger.info(`[${chalk.red('+')}] ${chalk.red(statusCode.toString())} - ${path} = ${length || 0}`)
+          print500(statusCode.toString(), path, length)
           break
       }
 
@@ -193,6 +210,13 @@ export function dir(
       }
     }
   }
+
+  progress.start(WORDLIST.length, 0)
+
+  setInterval(() => {
+    elapsed = ((new Date().getTime() - startTime) / 1000)
+    speed = totalReqs / elapsed
+  }, 1000).unref()
 
   for (let index = 0; index < WORKERS; index++) {
     const emitter = new events.EventEmitter()
