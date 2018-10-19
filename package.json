@@ -1,6 +1,6 @@
 {
   "name": "@phra/nodebuster",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "dirbuster clone for nodejs",
   "main": "dist/nodebuster.js",
   "repository": "https://github.com/phra/nodebuster",
