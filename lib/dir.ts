@@ -228,7 +228,7 @@ export function dir(
     const keepAliveAgentHTTPS = new https.Agent({
       keepAlive: true,
       keepAliveMsecs: 1000,
-      rejectUnauthorized: true,
+      rejectUnauthorized: false,
     })
 
     const keepAliveAgent = httpOptions.protocol === 'http:' ? keepAliveAgentHTTP : keepAliveAgentHTTPS
