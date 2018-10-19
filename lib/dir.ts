@@ -1,5 +1,5 @@
-import chalk from 'chalk'
 import _progress = require('cli-progress')
+import colorette = require('colorette')
 import events = require('events')
 import fs = require('fs')
 import http = require('http')
@@ -55,27 +55,27 @@ export function dir(
   let consecutiveFails = 0
 
   function printError(error: string, path?: string) {
-    logger.error(`[${chalk.red('+')}] ${chalk.gray(error || '')}${path ? ' - ' + path : ''}`)
+    logger.error(`[${colorette.red('+')}] ${colorette.gray(error || '')}${path ? ' - ' + path : ''}`)
   }
 
   function print100(statusCode: string, path: string) {
-    logger.info(`[${chalk.gray('+')}] ${chalk.gray(statusCode)} - ${path}`)
+    logger.info(`[${colorette.gray('+')}] ${colorette.gray(statusCode)} - ${path}`)
   }
 
   function print200(statusCode: string, path: string, length?: number) {
-    logger.info(`[${chalk.green('+')}] ${chalk.green(statusCode)} ${path}${length ? ' = ' + length : ''}`)
+    logger.info(`[${colorette.green('+')}] ${colorette.green(statusCode)} ${path}${length ? ' = ' + length : ''}`)
   }
 
   function print300(statusCode: string, path: string, location: string) {
-    logger.info(`[${chalk.yellow('+')}] ${chalk.yellow(statusCode)} ${path}${location ? ' => ' + location : ''}`)
+    logger.info(`[${colorette.yellow('+')}] ${colorette.yellow(statusCode)} ${path}${location ? ' => ' + location : ''}`)
   }
 
   function print400(statusCode: string, path: string, length?: number) {
-    logger.info(`[${chalk.magenta('+')}] ${chalk.magenta(statusCode)} ${path}${length ? ' = ' + length : ''}`)
+    logger.info(`[${colorette.magenta('+')}] ${colorette.magenta(statusCode)} ${path}${length ? ' = ' + length : ''}`)
   }
 
   function print500(statusCode: string, path: string, length?: number) {
-    logger.info(`[${chalk.red('+')}] ${chalk.red(statusCode)} - ${path}${length ? ' = ' + length : ''}`)
+    logger.info(`[${colorette.red('+')}] ${colorette.red(statusCode)} - ${path}${length ? ' = ' + length : ''}`)
   }
 
   function _handleResult(workerIndex: number, msg: IResult) {
