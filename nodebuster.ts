@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import caporal = require('caporal')
 
+// tslint:disable-next-line:no-console
 console.log = console.error.bind(console)
 import animation = require('chalk-animation')
 
@@ -37,6 +38,7 @@ caporal
           options.extensions = selectExtensions(results)
           process.stdout.write(`[?] Using extensions: ${options.extensions.join()}\n`)
           dir(logger, args.url, options as IOptions)
+        // tslint:disable-next-line:no-console
         }).catch((err) => console.error(err))
       } else {
         process.stdout.write(`[?] Using extensions: ${options.extensions.join()}\n`)

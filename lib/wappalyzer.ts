@@ -1,4 +1,5 @@
 import Wappalyzer = require('wappalyzer')
+import Browser = require('wappalyzer/browsers/zombie')
 import { IWappalyzerResult } from '../models'
 
 const options = {
@@ -24,7 +25,7 @@ const EXTENSIONS = {
 }
 
 export function wappalyzerScan(url: string): Promise<IWappalyzerResult> {
-  return new Wappalyzer(url, options).analyze()
+  return new Wappalyzer(Browser, url, options).analyze()
 }
 
 export function printResults(results: IWappalyzerResult): void {
